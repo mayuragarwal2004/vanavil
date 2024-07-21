@@ -21,7 +21,6 @@ const shuffleArray = (array) => {
   return array;
 };
 
-
 const Page = () => {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -56,13 +55,13 @@ const Page = () => {
   }, [itemsPerPage]);
 
   useEffect(() => {
+    if (!data) return;
     const filtered = data.filter(
       (item) =>
         item?.image_alt?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
-        item?.article_title
+        String(item?.article_title)
           ?.toLowerCase()
           .includes(searchQuery?.toLowerCase()) ||
-        item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
         item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase())
     );
     setFilteredData(filtered);

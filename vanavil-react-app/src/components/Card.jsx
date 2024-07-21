@@ -8,6 +8,7 @@ function getDomainName(url) {
     const parsedUrl = new URL(url);
     return parsedUrl.origin;
   } catch (error) {
+    console.log("Invalid URL:", url);
     console.error("Invalid URL:", error);
     return null;
   }
