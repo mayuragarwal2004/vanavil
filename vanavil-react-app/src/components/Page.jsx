@@ -11,11 +11,16 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import csvFileMapping from "../csvFileMapping.json";
 
-const csvFileMapping = {
-  ncsu: "ncsu_processed_data.csv",
-  stanford: "stanford_processed_data.csv",
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
 };
+
 
 const Page = () => {
   const [data, setData] = useState([]);
@@ -35,8 +40,9 @@ const Page = () => {
           header: true,
           dynamicTyping: true,
           complete: (result) => {
-            setData(result.data);
-            setFilteredData(result.data); // Initialize filteredData with full data
+            const shuffledData = shuffleArray(result.data);
+            setData(shuffledData);
+            setFilteredData(shuffledData);
           },
         });
       })
