@@ -8,6 +8,15 @@
   margin: 20px;
 }
 
+.controls label {
+  margin-right: 10px;
+}
+
+.controls input[type="text"] {
+  padding: 5px;
+  font-size: 1em;
+}
+
 /* Masonry layout styles */
 .my-masonry-grid {
   display: flex;

@@ -6,7 +6,6 @@ import Modal from 'react-modal';
 Modal.setAppElement('#root');
 
 const FullScreenModal = ({ isOpen, onRequestClose, image }) => {
-    console.log({image});
   return (
     <Modal
       isOpen={isOpen}

@@ -6,7 +6,6 @@ import FullScreenModal from "./FullScreenModal";
 function getDomainName(url) {
   try {
     const parsedUrl = new URL(url);
-    console.log({ parsedUrl });
     return parsedUrl.origin;
   } catch (error) {
     console.error("Invalid URL:", error);

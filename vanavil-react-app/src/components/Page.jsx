@@ -6,18 +6,25 @@ import Pagination from "./Pagination";
 import Masonry from "react-masonry-css";
 import "./Page.css";
 import { useParams } from "react-router-dom";
+import SearchBar from "./SearchBar";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const csvFileMapping = {
-    "ncsu": "ncsu_processed_data.csv",
-    "stanford": "stanford_processed_data.csv",
-}
+  ncsu: "ncsu_processed_data.csv",
+  stanford: "stanford_processed_data.csv",
+};
 
 const Page = () => {
   const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(
     parseInt(localStorage.getItem("itemsPerPage")) || 50
   );
+  const [searchQuery, setSearchQuery] = useState("");
   const { csv } = useParams();
 
   useEffect(() => {
@@ -29,6 +36,7 @@ const Page = () => {
           dynamicTyping: true,
           complete: (result) => {
             setData(result.data);
+            setFilteredData(result.data); // Initialize filteredData with full data
           },
         });
       })
@@ -41,6 +49,20 @@ const Page = () => {
     localStorage.setItem("itemsPerPage", itemsPerPage);
   }, [itemsPerPage]);
 
+  useEffect(() => {
+    const filtered = data.filter(
+      (item) =>
+        item?.image_alt?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+        item?.article_title
+          ?.toLowerCase()
+          .includes(searchQuery?.toLowerCase()) ||
+        item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase()) ||
+        item?.article_url?.toLowerCase().includes(searchQuery?.toLowerCase())
+    );
+    setFilteredData(filtered);
+    setCurrentPage(0); // Reset to first page on new search
+  }, [searchQuery, data]);
+
   const handlePageClick = (event) => {
     setCurrentPage(event.selected);
   };
@@ -50,33 +72,60 @@ const Page = () => {
     setCurrentPage(0); // Reset to first page
   };
 
+  const handleSearchChange = (event) => {
+    console.log("searching");
+    console.log(event.target.value);
+    setSearchQuery(event.target.value);
+  };
+
   const offset = currentPage * itemsPerPage;
-  const currentData = data.slice(offset, offset + itemsPerPage);
-  const pageCount = Math.ceil(data.length / itemsPerPage);
+  const currentData = filteredData.slice(offset, offset + itemsPerPage);
+  const pageCount = Math.ceil(filteredData.length / itemsPerPage);
 
   // Define breakpoints for masonry layout
   const breakpointColumnsObj = {
     default: 4,
     1100: 3,
     700: 2,
-    500: 1
+    500: 1,
   };
 
   return (
     <div className="Page">
       <h1>Image Gallery</h1>
-      <div className="controls">
+      <div
+        className="controls"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
         <label htmlFor="itemsPerPage">Items per page:</label>
-        <select
-          id="itemsPerPage"
-          value={itemsPerPage}
-          onChange={handleItemsPerPageChange}
-        >
-          <option value={10}>10</option>
-          <option value={20}>20</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </select>
+
+        <FormControl style={{ width: "100px" }}>
+          <Select
+            labelId="itemsPerPage"
+            id="itemsPerPage"
+            value={itemsPerPage}
+            onChange={handleItemsPerPageChange}
+          >
+            <MenuItem value={10}>10</MenuItem>
+            <MenuItem value={20}>20</MenuItem>
+            <MenuItem value={50}>50</MenuItem>
+            <MenuItem value={100}>100</MenuItem>
+          </Select>
+        </FormControl>
+      </div>
+      <div className="controls">
+        {/* <label htmlFor="search">Search:</label>
+        <input
+          id="search"
+          type="text"
+          
+          placeholder="Search by title or alt text"
+        /> */}
+        <SearchBar value={searchQuery} onChange={handleSearchChange} />
       </div>
       <Masonry
         breakpointCols={breakpointColumnsObj}
