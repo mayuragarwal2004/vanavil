@@ -1,4 +1,4 @@
-/* src/App.css */
+/* src/Page.css */
 
 .Page {
   text-align: center;
@@ -8,18 +8,23 @@
   margin: 20px;
 }
 
-.card-container {
+/* Masonry layout styles */
+.my-masonry-grid {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  width: auto;
 }
 
+.my-masonry-grid_column {
+  background-clip: padding-box;
+}
+
+/* Style each individual card */
 .card {
   border: 1px solid #ddd;
   border-radius: 8px;
   margin: 10px;
   padding: 10px;
-  width: 200px;
+  width: calc(100% - 40px);
   text-align: left;
   cursor: pointer;
 }

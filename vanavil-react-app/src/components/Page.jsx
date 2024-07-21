@@ -1,15 +1,16 @@
-
+// /src/components/Page.jsx
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import Card from "./Card";
 import Pagination from "./Pagination";
+import Masonry from "react-masonry-css";
 import "./Page.css";
 import { useParams } from "react-router-dom";
 
 const csvFileMapping = {
-        "ncsu": "ncsu_processed_data.csv",
-        "stanford": "stanford_processed_data.csv",
-    }
+    "ncsu": "ncsu_processed_data.csv",
+    "stanford": "stanford_processed_data.csv",
+}
 
 const Page = () => {
   const [data, setData] = useState([]);
@@ -34,7 +35,7 @@ const Page = () => {
       .catch((error) => {
         console.error("Error fetching and parsing CSV file:", error);
       });
-  }, []);
+  }, [csv]);
 
   useEffect(() => {
     localStorage.setItem("itemsPerPage", itemsPerPage);
@@ -53,6 +54,14 @@ const Page = () => {
   const currentData = data.slice(offset, offset + itemsPerPage);
   const pageCount = Math.ceil(data.length / itemsPerPage);
 
+  // Define breakpoints for masonry layout
+  const breakpointColumnsObj = {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1
+  };
+
   return (
     <div className="Page">
       <h1>Image Gallery</h1>
@@ -69,11 +78,15 @@ const Page = () => {
           <option value={100}>100</option>
         </select>
       </div>
-      <div className="card-container">
+      <Masonry
+        breakpointCols={breakpointColumnsObj}
+        className="my-masonry-grid"
+        columnClassName="my-masonry-grid_column"
+      >
         {currentData.map((item, index) => (
           <Card key={index} image={item} />
         ))}
-      </div>
+      </Masonry>
       <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
     </div>
   );
