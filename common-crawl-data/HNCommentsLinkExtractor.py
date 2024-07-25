@@ -24,13 +24,6 @@ print(f"Request URL: {request_url}\n")
 # Make the request
 response = requests.get(url, params=params)
 
-print(response.text)
-
-# youtube title
-# youtube link
-# HN comment
-# type sense
-
 # Check for successful response
 if response.status_code == 200:
     data = response.json()
@@ -57,3 +50,11 @@ if response.status_code == 200:
         print("\n" + "="*40 + "\n")
 else:
     print(f"Error: {response.status_code}")
+
+
+
+
+# youtube title
+# youtube link
+# HN comment
+# type sense
