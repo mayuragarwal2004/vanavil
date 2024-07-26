@@ -88,7 +88,7 @@ const fetchYouTubeTitle = async (videoId, apiKey) => {
   }
 };
 
-const App = () => {
+const HNLinksViewer = () => {
   const [youtubeLinks, setYoutubeLinks] = useState([]);
   const [videoTitles, setVideoTitles] = useState({});
 
@@ -154,4 +154,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default HNLinksViewer;

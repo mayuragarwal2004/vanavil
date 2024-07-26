@@ -1,4 +1,3 @@
-// /src/components/Page.jsx
 import React, { useState, useEffect } from "react";
 import Papa from "papaparse";
 import Card from "./Card";
@@ -11,6 +10,7 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
+import WordCloudComponent from "./WordCloudComponent";
 import csvFileMapping from "../csvFileMapping.json";
 
 const shuffleArray = (array) => {
@@ -97,51 +97,48 @@ const Page = () => {
 
   return (
     <div className="Page">
-      <h1>Image Gallery</h1>
-      <div
-        className="controls"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <label htmlFor="itemsPerPage">Items per page:</label>
-
-        <FormControl style={{ width: "100px" }}>
-          <Select
-            labelId="itemsPerPage"
-            id="itemsPerPage"
-            value={itemsPerPage}
-            onChange={handleItemsPerPageChange}
-          >
-            <MenuItem value={10}>10</MenuItem>
-            <MenuItem value={20}>20</MenuItem>
-            <MenuItem value={50}>50</MenuItem>
-            <MenuItem value={100}>100</MenuItem>
-          </Select>
-        </FormControl>
-      </div>
-      <div className="controls">
-        {/* <label htmlFor="search">Search:</label>
-        <input
-          id="search"
-          type="text"
-          
-          placeholder="Search by title or alt text"
-        /> */}
+      <div className="left-column">
+        <h1>Word Cloud</h1>
         <SearchBar value={searchQuery} onChange={handleSearchChange} />
+        <WordCloudComponent data={filteredData} />
       </div>
-      <Masonry
-        breakpointCols={breakpointColumnsObj}
-        className="my-masonry-grid"
-        columnClassName="my-masonry-grid_column"
-      >
-        {currentData.map((item, index) => (
-          <Card key={index} image={item} />
-        ))}
-      </Masonry>
-      <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
+      <div className="right-column">
+        <h1>Image Gallery</h1>
+        <div
+          className="controls"
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label htmlFor="itemsPerPage">Items per page:</label>
+
+          <FormControl style={{ width: "100px" }}>
+            <Select
+              labelId="itemsPerPage"
+              id="itemsPerPage"
+              value={itemsPerPage}
+              onChange={handleItemsPerPageChange}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={50}>50</MenuItem>
+              <MenuItem value={100}>100</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+        <Masonry
+          breakpointCols={breakpointColumnsObj}
+          className="my-masonry-grid"
+          columnClassName="my-masonry-grid_column"
+        >
+          {currentData.map((item, index) => (
+            <Card key={index} image={item} />
+          ))}
+        </Masonry>
+        <Pagination pageCount={pageCount} onPageChange={handlePageClick} />
+      </div>
     </div>
   );
 };
