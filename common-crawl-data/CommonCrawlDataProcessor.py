@@ -29,7 +29,7 @@ class CommonCrawlDataProcessor:
         if response.status_code == 200:
             return response.text
         else:
-            raise Exception(f"Failed to fetch data. Status code: {response.status_code}")
+            raise Exception(f"Failed to fetch data. Status code: {response.status_code}\nURL: {url}")
     
     def parse_json_data(self, data):
         data_lines = data.strip().split('\n')
