@@ -62,7 +62,7 @@ const extractYouTubeLinks = (comments) => {
     $("a").each((index, element) => {
       const href = $(element).attr("href");
       if (href && youtubePattern.test(href)) {
-        uniqueLinks.add({ href, commentText });
+        uniqueLinks.add({ href, commentText, hnTitle: comment.story_title });
       }
     });
   });
@@ -91,6 +91,7 @@ const fetchYouTubeTitle = async (videoId, apiKey) => {
 const HNLinksViewer = () => {
   const [youtubeLinks, setYoutubeLinks] = useState([]);
   const [videoTitles, setVideoTitles] = useState({});
+  const [hnTitles, setHnTitles] = useState({});
 
   const apiKey = "YOUR_YOUTUBE_API_KEY"; // Replace with your YouTube Data API key
 
@@ -100,15 +101,18 @@ const HNLinksViewer = () => {
       const links = extractYouTubeLinks(comments);
       setYoutubeLinks(links);
 
-      // Fetch YouTube video titles
+      // Fetch YouTube video titles and HN article titles
       const titles = {};
+      const hnTitlesTemp = {};
       await Promise.all(
-        links.map(async ({ href }) => {
+        links.map(async ({ href, hnTitle }) => {
           const videoId = href.match(/(?:watch\?v=|youtu\.be\/)([^\s"']+)/)[1];
           titles[href] = await fetchYouTubeTitle(videoId, apiKey);
+          hnTitlesTemp[href] = hnTitle;
         })
       );
       setVideoTitles(titles);
+      setHnTitles(hnTitlesTemp);
     };
 
     fetchComments();
@@ -142,7 +146,8 @@ const HNLinksViewer = () => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
               ></iframe>
-              <h3>{videoTitles[href]}</h3>
+              {/* <h3>{videoTitles[href]}</h3> */}
+              <h4>{hnTitles[href]}</h4>
               <p dangerouslySetInnerHTML={{ __html: commentText }}></p>
             </div>
           ))}
