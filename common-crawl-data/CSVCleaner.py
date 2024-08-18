@@ -78,7 +78,7 @@ def construct_valid_image_url(image_url, article_url):
 
 def is_image_url_valid(image_url):
     try:
-        response = requests.get(image_url, timeout=5)
+        response = requests.get(image_url, timeout=10)
         # Check if the content type is an image
         return response.headers['Content-Type'].startswith('image')
     except (requests.RequestException, KeyError):
