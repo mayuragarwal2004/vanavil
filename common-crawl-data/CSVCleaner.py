@@ -1,3 +1,28 @@
+"""
+This script processes a CSV file containing image URLs and associated article URLs. The main tasks performed are:
+
+1. **Whitespace Trimming**: Trims any leading or trailing whitespace from all fields in the CSV file.
+2. **URL Validation and Construction**: 
+   - Validates the `image_url` in each row.
+   - If the `image_url` is invalid, a valid URL is constructed using the corresponding `article_url`.
+3. **Duplicate Removal**:
+   - After generating valid URLs, the script removes duplicate rows based on the `image_url` and `image_alt` columns.
+4. **Invalid Link Removal**:
+   - Optionally checks if the `image_url` points to a valid image and removes the row if the link is broken or outdated.
+5. **Empty Image URL Removal**:
+   - Automatically removes rows with empty `image_url` fields.
+6. **ID Regeneration**:
+   - The `id` column, representing row numbers, is regenerated after duplicates are removed to ensure it remains sequential.
+7. **CSV File Saving**:
+   - The processed data is saved to a new CSV file with "_updated" appended to the original file name or overwrites the original file based on user preference.
+
+Usage:
+- Specify the CSV file path when prompted.
+- Choose whether to overwrite the original file or save the processed data to a new file.
+- Optionally choose to remove invalid image URLs.
+"""
+
+
 import pandas as pd
 from urllib.parse import urlparse, urljoin
 import re
