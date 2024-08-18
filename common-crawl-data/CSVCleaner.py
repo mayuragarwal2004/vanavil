@@ -7,20 +7,24 @@ This script processes a CSV file containing image URLs and associated article UR
    - If the `image_url` is invalid, a valid URL is constructed using the corresponding `article_url`.
 3. **Duplicate Removal**:
    - After generating valid URLs, the script removes duplicate rows based on the `image_url` and `image_alt` columns.
-4. **ID Regeneration**:
+4. **Invalid Link Removal**:
+   - Optionally checks if the `image_url` points to a valid image and removes the row if the link is broken or outdated.
+5. **ID Regeneration**:
    - The `id` column, representing row numbers, is regenerated after duplicates are removed to ensure it remains sequential.
-5. **CSV File Saving**:
+6. **CSV File Saving**:
    - The processed data is saved to a new CSV file with "_updated" appended to the original file name or overwrites the original file based on user preference.
 
 Usage:
 - Specify the CSV file path when prompted.
 - Choose whether to overwrite the original file or save the processed data to a new file.
+- Optionally choose to remove invalid image URLs.
 """
 
 import pandas as pd
 from urllib.parse import urlparse, urljoin
 import re
 import os
+import requests
 
 # Regex pattern for validating URLs
 URL_REGEX = re.compile(
@@ -36,6 +40,8 @@ def is_valid_url(url):
         return False
     if not url.startswith(('http://', 'https://')):
         return False
+    if url.startswith(('http://', 'https://')):
+        return True
     return re.match(URL_REGEX, url) is not None
 
 def construct_valid_image_url(image_url, article_url):
@@ -67,7 +73,15 @@ def construct_valid_image_url(image_url, article_url):
 
     return urljoin(base_url, os.path.normpath(image_url))
 
-def process_csv(file_path, overwrite=False):
+def is_image_url_valid(image_url):
+    try:
+        response = requests.get(image_url, timeout=5)
+        # Check if the content type is an image
+        return response.headers['Content-Type'].startswith('image')
+    except (requests.RequestException, KeyError):
+        return False
+
+def process_csv(file_path, overwrite=False, remove_invalid_links=False):
     # Load the CSV file
     df = pd.read_csv(file_path)
 
@@ -91,6 +105,11 @@ def process_csv(file_path, overwrite=False):
             valid_image_url = construct_valid_image_url(image_url, article_url)
             df.at[i, 'image_url'] = valid_image_url
             print(f"Updated image_url at index {i}: {valid_image_url}")
+
+        # Optionally remove rows with invalid image URLs
+        if remove_invalid_links and not is_image_url_valid(df.at[i, 'image_url']):
+            print(f"Invalid or broken image link found at index {i}: {df.at[i, 'image_url']}")
+            df.drop(i, inplace=True)
 
     # Remove duplicate rows based on the updated image_url and image_alt
     if 'image_url' in df.columns and 'image_alt' in df.columns:
@@ -116,4 +135,6 @@ def process_csv(file_path, overwrite=False):
 csv_file = input("Enter the path to the CSV file: ")
 overwrite_choice = input("Do you want to overwrite the original file? (yes/no): ").strip().lower()
 overwrite = overwrite_choice == 'yes'
-process_csv(csv_file, overwrite)
+remove_invalid_links_choice = input("Do you want to remove invalid image links? (yes/no): ").strip().lower()
+remove_invalid_links = remove_invalid_links_choice == 'yes'
+process_csv(csv_file, overwrite, remove_invalid_links)
