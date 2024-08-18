@@ -56,10 +56,12 @@ def construct_valid_image_url(image_url, article_url):
         image_url = urldirpath + image_url[2:]
     elif image_url.startswith('../'):
         # Handle URLs with "../" by normalizing the path
-        combined_url = urljoin(base_url, urldirpath)        
+        combined_url = urljoin(base_url, urldirpath)
         combined_url = urljoin(combined_url, image_url)
         image_url = os.path.normpath(combined_url.replace(base_url, ''))
         return urljoin(base_url, image_url)
+    elif image_url.startswith('/'):
+        pass
     else:
         image_url = urldirpath + image_url
 
