@@ -1,25 +1,3 @@
-"""
-This script processes a CSV file containing image URLs and associated article URLs. The main tasks performed are:
-
-1. **Whitespace Trimming**: Trims any leading or trailing whitespace from all fields in the CSV file.
-2. **URL Validation and Construction**: 
-   - Validates the `image_url` in each row.
-   - If the `image_url` is invalid, a valid URL is constructed using the corresponding `article_url`.
-3. **Duplicate Removal**:
-   - After generating valid URLs, the script removes duplicate rows based on the `image_url` and `image_alt` columns.
-4. **Invalid Link Removal**:
-   - Optionally checks if the `image_url` points to a valid image and removes the row if the link is broken or outdated.
-5. **ID Regeneration**:
-   - The `id` column, representing row numbers, is regenerated after duplicates are removed to ensure it remains sequential.
-6. **CSV File Saving**:
-   - The processed data is saved to a new CSV file with "_updated" appended to the original file name or overwrites the original file based on user preference.
-
-Usage:
-- Specify the CSV file path when prompted.
-- Choose whether to overwrite the original file or save the processed data to a new file.
-- Optionally choose to remove invalid image URLs.
-"""
-
 import pandas as pd
 from urllib.parse import urlparse, urljoin
 import re
@@ -36,7 +14,7 @@ URL_REGEX = re.compile(
 
 def is_valid_url(url):
     # Returns False for relative URLs that start with "./" or "/" or "../"
-    if url.startswith(('./', '/', '../', "\\")):
+    if pd.isna(url) or url.startswith(('./', '/', '../', "\\")):
         return False
     if not url.startswith(('http://', 'https://')):
         return False
@@ -92,6 +70,14 @@ def process_csv(file_path, overwrite=False, remove_invalid_links=False):
     if 'image_url' not in df.columns or 'article_url' not in df.columns or 'id' not in df.columns:
         print(f"No 'image_url', 'article_url', or 'id' column found in {file_path}.")
         return
+
+    # Count and drop rows with empty 'image_url'
+    initial_count = len(df)
+    df = df.dropna(subset=['image_url'])
+    empty_count = initial_count - len(df)
+    
+    if empty_count > 0:
+        print(f"Removed {empty_count} rows with empty 'image_url'.")
 
     # Process each record to update image URLs
     for i, row in df.iterrows():
