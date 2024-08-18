@@ -55,7 +55,7 @@ def construct_valid_image_url(image_url, article_url):
     if len(urldirpath) >= 1:
         if urldirpath[-1] == '':
             urldirpath.pop()
-        if urldirpath[-1].find('.') != -1:
+        elif urldirpath[-1].find('.') != -1:
             urldirpath.pop()
     
     urldirpath = "/".join(urldirpath) + "/"
