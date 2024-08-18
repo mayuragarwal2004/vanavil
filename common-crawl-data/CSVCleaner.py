@@ -10,11 +10,11 @@ This script processes a CSV file containing image URLs and associated article UR
 4. **ID Regeneration**:
    - The `id` column, representing row numbers, is regenerated after duplicates are removed to ensure it remains sequential.
 5. **CSV File Saving**:
-   - The processed data is saved to a new CSV file with "_updated" appended to the original file name.
+   - The processed data is saved to a new CSV file with "_updated" appended to the original file name or overwrites the original file based on user preference.
 
 Usage:
-- Specify the CSV file path in the `csv_file` variable.
-- Run the script to process the file and generate an updated version with the above modifications.
+- Specify the CSV file path when prompted.
+- Choose whether to overwrite the original file or save the processed data to a new file.
 """
 
 import pandas as pd
@@ -65,7 +65,7 @@ def construct_valid_image_url(image_url, article_url):
 
     return urljoin(base_url, os.path.normpath(image_url))
 
-def process_csv(file_path):
+def process_csv(file_path, overwrite=False):
     # Load the CSV file
     df = pd.read_csv(file_path)
 
@@ -100,11 +100,18 @@ def process_csv(file_path):
     # Regenerate the 'id' column with new row numbers
     df['id'] = range(1, len(df) + 1)
 
+    # Determine file path for saving
+    if overwrite:
+        new_file_path = file_path
+    else:
+        new_file_path = os.path.splitext(file_path)[0] + "_updated.csv"
+
     # Save the updated CSV
-    new_file_path = os.path.splitext(file_path)[0] + "_updated.csv"
     df.to_csv(new_file_path, index=False)
     print(f"Completed processing. Updated file saved to {new_file_path}")
 
 # Example usage
 csv_file = input("Enter the path to the CSV file: ")
-process_csv(csv_file)
+overwrite_choice = input("Do you want to overwrite the original file? (yes/no): ").strip().lower()
+overwrite = overwrite_choice == 'yes'
+process_csv(csv_file, overwrite)
