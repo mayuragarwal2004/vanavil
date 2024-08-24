@@ -23,27 +23,25 @@ Dependencies:
 import pandas as pd
 import argparse
 
-def remove_empty_bw_ratio(csv_file_path, output_file_path):
+def remove_empty_bw_ratio(input_csv, output_csv):
     # Load the CSV file into a DataFrame
-    df = pd.read_csv(csv_file_path)
-    
-    # Drop rows where 'bw_ratio' is empty
+    df = pd.read_csv(input_csv)
+
+    # Remove rows where 'bw_ratio' is empty
     df_cleaned = df.dropna(subset=['bw_ratio'])
-    
-    # Save the cleaned DataFrame back to a new CSV file
-    df_cleaned.to_csv(output_file_path, index=False)
-    print(f"Records with empty 'bw_ratio' have been removed and saved to {output_file_path}")
+
+    # Reset the 'id' column to reflect new row numbers
+    df_cleaned.reset_index(drop=True, inplace=True)
+    df_cleaned.index += 1
+    df_cleaned['id'] = df_cleaned.index
+
+    # Save the cleaned DataFrame to a new CSV file
+    df_cleaned.to_csv(output_csv, index=False)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Remove records with empty 'bw_ratio' from a CSV file.")
-    
-    # Add argument for input CSV file
+    parser = argparse.ArgumentParser(description="Remove records with empty 'bw_ratio' values from a CSV file.")
     parser.add_argument("input_csv", help="Path to the input CSV file")
-    
-    # Add argument for output CSV file
     parser.add_argument("output_csv", help="Path to save the output CSV file")
-    
     args = parser.parse_args()
-    
-    # Call the function with the provided arguments
+
     remove_empty_bw_ratio(args.input_csv, args.output_csv)
