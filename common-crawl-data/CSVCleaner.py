@@ -20,9 +20,23 @@ Usage:
 - Specify the CSV file path when prompted.
 - Choose whether to overwrite the original file or save the processed data to a new file.
 - Optionally choose to remove invalid image URLs.
+
+Run the Script:
+   - To process a CSV file and save the updated data to a new file:
+     python process_csv.py path/to/yourfile.csv
+     
+   - To overwrite the original file:
+     python process_csv.py path/to/yourfile.csv --overwrite
+     
+   - To remove invalid image links:
+     python process_csv.py path/to/yourfile.csv --remove-invalid-links
+     
+   - To overwrite the original file and remove invalid image links:
+     python process_csv.py path/to/yourfile.csv --overwrite --remove-invalid-links
 """
 
 
+import argparse
 import pandas as pd
 from urllib.parse import urlparse, urljoin
 import re
@@ -142,10 +156,12 @@ def process_csv(file_path, overwrite=False, remove_invalid_links=False):
     df.to_csv(new_file_path, index=False)
     print(f"Completed processing. Updated file saved to {new_file_path}")
 
-# Example usage
-csv_file = input("Enter the path to the CSV file: ")
-overwrite_choice = input("Do you want to overwrite the original file? (yes/no): ").strip().lower()
-overwrite = overwrite_choice == 'yes'
-remove_invalid_links_choice = input("Do you want to remove invalid image links? (yes/no): ").strip().lower()
-remove_invalid_links = remove_invalid_links_choice == 'yes'
-process_csv(csv_file, overwrite, remove_invalid_links)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Process a CSV file containing image URLs and associated article URLs.")
+    parser.add_argument("file_path", type=str, help="Path to the CSV file.")
+    parser.add_argument("--overwrite", action="store_true", help="Overwrite the original file.")
+    parser.add_argument("--remove-invalid-links", action="store_true", help="Remove invalid image links.")
+
+    args = parser.parse_args()
+
+    process_csv(args.file_path, args.overwrite, args.remove_invalid_links)
