@@ -16,7 +16,9 @@ class StackExchangeFetcher:
         if response.status_code == 200:
             questions = response.json().get('items', [])
             for question in questions:
-                question['body'] = self.convert_html_to_text(question.get('body', ''))
+                question['body'] = self.format_question_body(
+                    question.get('body', ''), question.get('link', '')
+                )
             return questions
         else:
             print(f"Failed to fetch questions. Status code: {response.status_code}")
@@ -42,6 +44,17 @@ class StackExchangeFetcher:
     def convert_html_to_markdown(self, html_content):
         """Convert HTML to Markdown."""
         return self.html_converter.handle(html_content).strip()
+
+    def format_question_body(self, html_content, question_link):
+        """Convert HTML to plain text and append attribution footer."""
+        plain_text_body = self.convert_html_to_text(html_content)
+        footer = (
+            "\n" * 4 +
+            f"This question was originally posted on StackExchange {self.site}. \n"
+            f"To view the original discussion, visit the {question_link}. \n"
+            f"This content is licensed under the Creative Commons Attribution-ShareAlike license https://creativecommons.org/licenses/by-sa/4.0/."
+        )
+        return plain_text_body + footer
 
 # Example usage
 if __name__ == "__main__":
