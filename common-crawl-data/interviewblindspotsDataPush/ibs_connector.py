@@ -17,10 +17,11 @@ class IBSConnector:
             print(f"An error occurred: {e}")
             return None
 
-    def create_snippet(self, title, text):
+    def create_snippet(self, title, text, language='clike'):
         payload = {
             "title": title,
-            "text": text
+            "text": text,
+            "language": language  # Include the language in the payload
         }
         return self.send_request("snippets/", payload)
 
@@ -37,8 +38,8 @@ class IBSConnector:
             else:
                 print(f"Failed to add comment: {comment}")
 
-    def create_snippet_with_comments(self, title, text, comments):
-        snippet_response = self.create_snippet(title, text)
+    def create_snippet_with_comments(self, title, text, comments, language='clike'):
+        snippet_response = self.create_snippet(title, text, language)
         if snippet_response:
             snippet_id = snippet_response.get("id")
             if snippet_id:
@@ -62,6 +63,7 @@ if __name__ == "__main__":
 
     title = "new trial from python"
     text = "\"here \\n\\nwill \\n\\nbe solution \\n\\n\\nof the \\n\\nquestion\""
+    language = "python"  # Example language
 
     comments = [
         {"line": 1, "text": "This is the first comment."},
@@ -69,4 +71,4 @@ if __name__ == "__main__":
         {"line": 3, "text": "This is the third comment."}
     ]
 
-    ibs_connector.create_snippet_with_comments(title, text, comments)
+    ibs_connector.create_snippet_with_comments(title, text, comments, language=language)

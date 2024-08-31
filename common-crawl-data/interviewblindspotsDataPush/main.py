@@ -17,17 +17,23 @@ def main():
 
     # Fetch top questions
     top_questions = fetcher.fetch_top_questions()
+    # top_questions = top_questions[:1] 
 
     for idx, question in enumerate(top_questions, start=1):
         title = question.get('title')
         question_id = question.get('question_id')
         question_body = question.get('body', '[No Content]')
         link = question.get('link')
+        tags = question.get('tags', [])
         
         print(f"Question {idx}: {title}")
         print(f"Link: {link}")
         
-        # Create snippet for the question
+        # Detect the programming language from the tags
+        detected_language = fetcher.detect_language_from_tags(tags)
+        print(f"Detected Language: {detected_language}")
+        
+        # Create snippet for the question, including the detected language
         snippet_response = ibs_connector.create_snippet(title, question_body)
         if snippet_response:
             snippet_id = snippet_response.get('id')
