@@ -34,7 +34,7 @@ def main():
         print(f"Detected Language: {detected_language}")
         
         # Create snippet for the question, including the detected language
-        snippet_response = ibs_connector.create_snippet(title, question_body)
+        snippet_response = ibs_connector.create_snippet(title, question_body, detected_language)
         if snippet_response:
             snippet_id = snippet_response.get('id')
             
