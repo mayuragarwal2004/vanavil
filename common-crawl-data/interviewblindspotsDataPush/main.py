@@ -1,3 +1,4 @@
+# Interview Blindspots Connector
 import os
 from dotenv import load_dotenv
 from ibs_connector import IBSConnector
