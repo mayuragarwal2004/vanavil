@@ -3,21 +3,24 @@ import requests
 from dotenv import load_dotenv
 
 # Modify the sample data in the main function
-add_sample_snippet = False  # Set to True to add a sample snippet with comments
+add_sample_snippet = True  # Set to True to add a sample snippet with comments
 delete_sample_snippet = False  # Set to True to delete the sample snippet
 
 class IBSConnector:
     def __init__(self, token):
         self.base_url = "https://backend.interviewblindspots.com/displaycode/"
         self.cookies = {"token": token}
+        self.headers = { "Authorization": f"Token {token}" }
 
     def send_request(self, endpoint, payload=None, method='POST'):
         url = self.base_url + endpoint
         try:
             if method == 'POST':
-                response = requests.post(url, cookies=self.cookies, data=payload)
+                response = requests.post(url, cookies=self.cookies, data=payload, headers=self.headers)
             elif method == 'DELETE':
-                response = requests.delete(url, cookies=self.cookies)
+                response = requests.delete(url, cookies=self.cookies, headers=self.headers)
+            elif method == 'GET':
+                response = requests.get(url, cookies=self.cookies, headers=self.headers)
             else:
                 raise ValueError(f"Unsupported HTTP method: {method}")
                 
@@ -27,11 +30,24 @@ class IBSConnector:
             print(f"An error occurred: {e}")
             return None
 
-    def create_snippet(self, title, text, language='clike'):
+    def get_username(self):
+        # return "stackoverflow"
+        # Fetch the username from the provided route
+        endpoint = "api/v1/users/me/"
+        response = self.send_request(endpoint, method='GET')
+        print(response)
+        if response:
+            return response.get("username")
+        else:
+            print("Failed to retrieve username.")
+            return None
+
+    def create_snippet(self, title, text, language='clike', author=None):
         payload = {
             "title": title,
             "text": text,
-            "language": language  # Include the language in the payload
+            "language": language,
+            "author": "https://backend.interviewblindspots.com/displaycode/users//"  # Include the author in the payload
         }
         return self.send_request("snippets/", payload)
 
@@ -49,7 +65,13 @@ class IBSConnector:
                 print(f"Failed to add comment: {comment}")
 
     def create_snippet_with_comments(self, title, text, comments, language='clike'):
-        snippet_response = self.create_snippet(title, text, language)
+        # Get the username to be used as the author
+        author = self.get_username()
+        if not author:
+            print("Snippet creation aborted due to missing author.")
+            return None
+
+        snippet_response = self.create_snippet(title, text, language, author)
         if snippet_response:
             snippet_id = snippet_response.get("id")
             if snippet_id:
@@ -79,6 +101,7 @@ if __name__ == "__main__":
 
     ibs_connector = IBSConnector(tokenidfromenv)
     
+    print(ibs_connector.get_username())
     
     if add_sample_snippet:
         # Example snippet creation
