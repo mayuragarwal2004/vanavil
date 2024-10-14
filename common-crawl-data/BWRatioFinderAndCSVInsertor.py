@@ -98,16 +98,33 @@ def process_csv_file(file_path, tolerance=0):
             start_time = datetime.now()
             log.write(f"Processing started for {file_path} at {start_time}\n")
 
-            # Load the CSV file
+            # Load the input CSV file
             df = pd.read_csv(file_path)
 
-            # Ensure there's an 'image_url' and 'article_url' column
-            if 'image_url' not in df.columns or 'article_url' not in df.columns:
-                print(f"No 'image_url' or 'article_url' column found in {file_path}. Skipping this file.")
+            # Ensure there's an 'image_url', 'article_url', and 'id' column
+            if 'image_url' not in df.columns or 'article_url' not in df.columns or 'id' not in df.columns:
+                print(f"No 'image_url', 'article_url', or 'id' column found in {file_path}. Skipping this file.")
+                return
+
+            # Check if the output file exists
+            output_file_path = os.path.splitext(file_path)[0] + "_bw_ratio.csv"
+            if os.path.exists(output_file_path):
+                # Load the output CSV to find the last processed ID
+                df_output = pd.read_csv(output_file_path)
+                last_processed_id = df_output['id'].max()
+
+                # Filter the input CSV to start processing from the last processed ID
+                df = df[df['id'] > last_processed_id]
+                print(f"Resuming processing from ID {last_processed_id + 1} for {file_path}.")
+            else:
+                print(f"No output file found. Starting from the beginning for {file_path}.")
+            
+            total_records = len(df)
+            if total_records == 0:
+                print(f"All records have already been processed for {file_path}.")
                 return
 
             # Process each image URL using multithreading
-            total_records = len(df)
             with ThreadPoolExecutor(max_workers=10) as executor:
                 futures = {
                     executor.submit(process_record, i, row, df, tolerance): i
@@ -120,13 +137,13 @@ def process_csv_file(file_path, tolerance=0):
                         # Check if the future was completed successfully
                         future.result()
                         # Save the CSV after processing each record
-                        new_file_path = os.path.splitext(file_path)[0] + "_bw_ratio.csv"
-                        df.to_csv(new_file_path, index=False)
+                        df_output = pd.concat([df_output, df], ignore_index=True) if os.path.exists(output_file_path) else df
+                        df_output.to_csv(output_file_path, index=False)
                         print(f"Record {i+1}/{total_records} in {file_path} processed and saved.")
                     except Exception as e:
                         print(f"Error in processing thread for record {i+1}: {e}")
 
-            print(f"Completed processing {file_path}. Output saved to {new_file_path}")
+            print(f"Completed processing {file_path}. Output saved to {output_file_path}")
 
             # Log the end time for the file
             end_time = datetime.now()
