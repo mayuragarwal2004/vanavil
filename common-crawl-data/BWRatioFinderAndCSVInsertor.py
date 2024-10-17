@@ -108,15 +108,18 @@ def process_csv_file(file_path, tolerance=0):
 
             # Check if the output file exists
             output_file_path = os.path.splitext(file_path)[0] + "_bw_ratio.csv"
+            # Check if the output file exists
             if os.path.exists(output_file_path):
-                # Load the output CSV to find the last processed ID
                 df_output = pd.read_csv(output_file_path)
                 last_processed_id = df_output['id'].max()
 
                 # Filter the input CSV to start processing from the last processed ID
                 df = df[df['id'] > last_processed_id]
+                df = df.reset_index(drop=True)  # Reset index after filtering
                 print(f"Resuming processing from ID {last_processed_id + 1} for {file_path}.")
+
             else:
+                df_output = pd.DataFrame()  # Initialize empty dataframe if no output file exists
                 print(f"No output file found. Starting from the beginning for {file_path}.")
             
             total_records = len(df)
@@ -136,8 +139,8 @@ def process_csv_file(file_path, tolerance=0):
                     try:
                         # Check if the future was completed successfully
                         future.result()
-                        # Save the CSV after processing each record
-                        df_output = pd.concat([df_output, df], ignore_index=True) if os.path.exists(output_file_path) else df
+                        # Append only new rows to the output file
+                        df_output = pd.concat([df_output, df.iloc[[i]]], ignore_index=True)
                         df_output.to_csv(output_file_path, index=False)
                         print(f"Record {i+1}/{total_records} in {file_path} processed and saved.")
                     except Exception as e:
