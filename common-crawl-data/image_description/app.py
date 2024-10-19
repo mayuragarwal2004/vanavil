@@ -79,7 +79,8 @@ def update_entries():
             cursor.execute(f'''
                 UPDATE {TABLE_NAME}
                 SET caption = ?, detailed_caption = ?, more_detailed_caption = ?, 
-                    logo_detection_img = ?, objects_detected = ?, is_locked = 0, locked_at = NULL
+                    logo_detection_img = ?, objects_detected = ?, human_detected = ?, 
+                    is_locked = 0, locked_at = NULL
                 WHERE id = ?
             ''', (
                 entry.get('caption'),
@@ -87,6 +88,7 @@ def update_entries():
                 entry.get('more_detailed_caption'),
                 entry.get('logo_detection_img'),
                 entry.get('objects_detected'),
+                entry.get('human_detected'),
                 entry.get('id')
             ))
         
@@ -98,6 +100,11 @@ def update_entries():
         return jsonify({"error": str(e)}), 500
     finally:
         conn.close()
+
+# Test route
+@app.route('/test', methods=['GET'])
+def test():
+    return jsonify({"message": "Server is running"}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=5003)

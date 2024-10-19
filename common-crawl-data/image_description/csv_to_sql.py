@@ -22,6 +22,7 @@ def create_table(cursor, table_name):
                 more_detailed_caption TEXT,
                 logo_detection_img TEXT,
                 objects_detected TEXT,
+                human_detected TEXT,  -- New column added here
                 is_locked INTEGER DEFAULT 0,  -- Tracks if an entry is sent to a client
                 locked_at TIMESTAMP  -- Tracks when the entry was locked
             )
@@ -39,8 +40,9 @@ def insert_csv_to_db(cursor, table_name, csv_file):
             for row in reader:
                 cursor.execute(f'''
                     INSERT INTO {table_name} (id, url_key, article_title, image_url, image_alt, article_url, bw_ratio,
-                                              caption, detailed_caption, more_detailed_caption, logo_detection_img, objects_detected)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                              caption, detailed_caption, more_detailed_caption, logo_detection_img, 
+                                              objects_detected, human_detected)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     row['id'],
                     row['urlkey'],
@@ -53,7 +55,8 @@ def insert_csv_to_db(cursor, table_name, csv_file):
                     None,  # detailed_caption (empty for now)
                     None,  # more_detailed_caption (empty for now)
                     None,  # logo_detection_img (empty for now)
-                    None   # objects_detected (empty for now)
+                    None,  # objects_detected (empty for now)
+                    None   # human_detected (empty for now)
                 ))
         print(f"Data successfully inserted into table '{table_name}'.")
     except FileNotFoundError:
