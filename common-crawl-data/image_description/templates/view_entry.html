@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entry Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        p {
+            color: #555;
+        }
+        .image {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Entry ID: {{ entry.id }}</h2>
+
+        <div class="image">
+            <img src="{{ entry.image_url }}" alt="{{ entry.image_alt }}">
+        </div>
+
+        <p><strong>Article Title:</strong> {{ entry.article_title }}</p>
+        <p><strong>Caption:</strong> {{ entry.caption }}</p>
+        <p><strong>Detailed Caption:</strong> {{ entry.detailed_caption }}</p>
+        <p><strong>More Detailed Caption:</strong> {{ entry.more_detailed_caption }}</p>
+        <p><strong>Logo Detection Image:</strong> {{ entry.logo_detection_img }}</p>
+        <p><strong>Objects Detected:</strong> {{ entry.objects_detected }}</p>
+        <p><strong>Human Detected:</strong> {{ entry.human_detected }}</p>
+        <p><strong>Locked Status:</strong> {{ entry.is_locked }}</p>
+        <p><strong>Locked At:</strong> {{ entry.locked_at }}</p>
+    </div>
+</body>
+</html>

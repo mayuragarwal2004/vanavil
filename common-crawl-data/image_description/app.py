@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 import sqlite3
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -100,6 +100,24 @@ def update_entries():
         return jsonify({"error": str(e)}), 500
     finally:
         conn.close()
+        
+# Route to render entry details in an HTML view
+@app.route('/view/<int:entry_id>', methods=['GET'])
+def view_entry(entry_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch the entry data based on the ID
+    cursor.execute(f'SELECT * FROM {TABLE_NAME} WHERE id = ?', (entry_id,))
+    entry = cursor.fetchone()
+    
+    if not entry:
+        return f"Entry with ID {entry_id} not found.", 404
+
+    conn.close()
+
+    # Pass the entry to the HTML template and render it
+    return render_template('view_entry.html', entry=entry)
 
 # Test route
 @app.route('/test', methods=['GET'])
