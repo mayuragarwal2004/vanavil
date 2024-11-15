@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Email Autofill Extension",
+  "version": "1.3",
+  "description": "Automatically populates email signup popups with a predefined email address.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon-off.png",
+      "32": "icon-off.png",
+      "48": "icon-off.png"
+    },
+    "default_title": "Email Autofill"
+  },
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ],
+  "icons": {
+    "48": "icon.png"
+  }
+}
